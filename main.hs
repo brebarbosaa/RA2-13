@@ -3,6 +3,9 @@ import Data.Map (Map, empty, singleton, lookup, member, insert, delete, elems, s
 import qualified Data.Map as Map
 import Data.Time.Clock (getCurrentTime, UTCTime)
 import GHC.Generics (Generic)
+import System.IO (hFlush, stdout) --pt3
+import Control.Exception (catch, IOException) --pt3
+import System.Directory (doesFileExist) --pt3
 
 -- Aluno 1: Arquiteto de Dados - Leticia --
 data Item = Item
@@ -119,18 +122,118 @@ testSerialization nome valor = do
             putStrLn $ "  Original: " ++ show valor
             putStrLn $ "  Desserializado: " ++ show desserializado
 
--- Main
+
+-- Aluno 3: Módulo de I/O e Persistência - Leticia -- 
+
+inventarioFile :: FilePath
+inventarioFile = "Inventario.dat"
+
+logFile :: FilePath
+logFile = "Auditoria.log"
+
+-- carregar Inventario salvo e tratar exceções --
+loadInventory :: IO Inventario
+loadInventory = catch (do exists <- doesFileExist inventarioFile
+    if exists then do content <- readFile inventarioFile
+        return (read content)
+    else return Map.empty)
+    (\(_ :: IOException) -> return Map.empty)
+
+-- salvar estado atual do inventario --
+saveInventory :: Inventario -> IO ()
+saveInventory inv = writeFile inventarioFile (show inv)
+
+-- gravar estrada no log de auditoria --
+appendAudit :: LogEntry -> IO ()
+appendAudit logEntry = appendFile logFile (show logEntry ++ "\n")
+
+-- exibir menu interativo --
+printMenu :: IO ()
+printMenu = do
+    putStrLn "\n *** Sistema de Inventário ***"
+    putStrLn "[1] Adicionar item"
+    putStrLn "[2] Remover item"
+    putStrLn "[3] Atualizar quantidade"
+    putStrLn "[4] Listar itens"
+    putStrLn "[0] Sair"
+    putStrLn "Escolha: "
+    hFlush stdout
+    
+-- Main -- 
 main :: IO ()
 main = do
-    tempo <- getCurrentTime
+    putStrLn "=== Inicializando sistema de inventário ==="
+    inv <- loadInventory
+    putStrLn $ "Inventário carregado. Itens: " ++ show(Map.size inv)
+    loop inv
 
-    let itemTeste = Item "001" "Teclado" 10 "Periférico"
-        logTeste  = LogEntry tempo Add "Adicionado item 001" Sucesso
-        acaoTeste = Remove
-        statusTeste = Falha "Erro no teste"
-    putStrLn " Iniciando testes de serialização do módulo Types..."
-    testSerialization "Item" itemTeste
-    testSerialization "LogEntry" logTeste
-    testSerialization "AcaoLog" acaoTeste
-    testSerialization "StatusLog" statusTeste
-    putStrLn " Todos os testes concluídos."
+-- loop principal interativo -- 
+loop :: Inventario -> IO ()
+loop inv = do
+    printMenu
+    opcao <- getLine
+    case opcao of
+        "1" -> do
+            tempo <- getCurrentTime
+            putStrLn "ID: " >> hFlush stdout
+            itemID <- getLine
+            putStrLn "Nome: " >> hFlush stdout
+            nome <- getLine
+            putStrLn "Quantidade: " >> hFlush stdout
+            qtdeStr <- getLine
+            putStrLn "Categoria: " >> hFlush stdout
+            categoria <- getLine
+            let qtd = read qtdeStr :: Int
+            case addItem tempo itemID nome qtd categoria inv of
+                Left err -> do
+                    putStrLn err
+                    appendFile logFile (show tempo ++ " - Falha: " ++ err ++ "\n")
+                    loop inv
+                Right (novoInv, logEntry) -> do
+                    saveInventory novoInv
+                    appendAudit logEntry
+                    putStrLn "Item adicionado com sucesso!"
+                    loop novoInv
+        "2" -> do
+            tempo <- getCurrentTime
+            putStrLn "ID do item a ser removido: " >> hFlush stdout
+            itemID <- getLine
+            putStrLn "Quantidade a ser removida: " >> hFlush stdout
+            qtdeStr <- getLine
+            let qtd = read qtdeStr :: Int
+            case removeItem tempo itemID qtd inv of
+                Left err -> do
+                    putStrLn err
+                    appendFile logFile (show tempo ++ " - Falha: " ++ err ++ "\n")
+                    loop inv
+                Right (novoInv, logEntry) -> do
+                    saveInventory novoInv
+                    appendAudit logEntry
+                    putStrLn "Item removido/atualizado com sucesso!"
+                    loop novoInv
+        "3" -> do
+            tempo <- getCurrentTime
+            putStrLn "ID: " >> hFlush stdout
+            itemID <- getLine
+            putStrLn "Nova quantidade: " >> hFlush stdout
+            qtdeStr <- getLine
+            let qtd = read qtdeStr :: Int
+            case updateQty tempo itemID qtd inv of 
+                Left err -> do
+                    putStrLn err
+                    appendFile logFile (show tempo ++ " - Falha: " ++ err ++ "\n")
+                    loop inv
+                Right (novoInv, logEntry) -> do
+                    saveInventory novoInv
+                    appendAudit logEntry
+                    putStrLn "Quantidade atualizada com sucesso!"
+                    loop novoInv
+        "4" -> do
+            putStrLn "\nInventário atual: "
+            mapM_ print (Map.elems inv)
+            loop inv
+        "0" -> putStrLn "Encerrando o sistema..."
+        
+        _ -> do
+            putStrLn "Opção inválida!"
+            loop inv
