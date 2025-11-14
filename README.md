@@ -90,8 +90,6 @@ O sistema foi populado com pelo menos 10 itens diferentes durante os testes (per
 
 ### Funções de análise e relatório:
 
-### Funções de Análise e Relatórios (implementadas – Aluna Brenda)
-
 | Função                  | Assinatura                                   | Descrição                                                                                   | Resultado exibido no comando `report`                                      |
 |-------------------------|----------------------------------------------|-------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
 | `historicoPorItem`      | `String -> [LogEntry] -> [LogEntry]`         | Retorna todas as entradas de log (Add, Remove, Update) referentes a um determinado `itemID`                | Não exibido diretamente (pode ser usado para consultas futuras)           |
