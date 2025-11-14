@@ -1,0 +1,10 @@
+LogEntry {timestamp = 2025-11-14 18:31:00.074070513 UTC, acao = Add "item01", detalhes = "Item {itemID = \"item01\", nome = \"caneta\", quantidade = 1, categoria = \"escolar\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:31:12.899849876 UTC, acao = QueryFail "add item01 lapis 4 escolar", detalhes = "Erro: ID j\225 existente", status = Falha "Erro: ID j\225 existente"}
+LogEntry {timestamp = 2025-11-14 18:31:21.684296157 UTC, acao = Add "item02", detalhes = "Item {itemID = \"item02\", nome = \"lapis\", quantidade = 4, categoria = \"escolar\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:31:31.477503777 UTC, acao = Add "item03", detalhes = "Item {itemID = \"item03\", nome = \"borracha\", quantidade = 5, categoria = \"escolar\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:31:44.237411794 UTC, acao = Add "item05", detalhes = "Item {itemID = \"item05\", nome = \"apontador\", quantidade = 6, categoria = \"escolar\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:32:03.196088125 UTC, acao = Add "item06", detalhes = "Item {itemID = \"item06\", nome = \"mesa\", quantidade = 2, categoria = \"movel\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:32:14.061139319 UTC, acao = Add "item07", detalhes = "Item {itemID = \"item07\", nome = \"cadeira\", quantidade = 4, categoria = \"movel\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:32:27.657288643 UTC, acao = Add "item08", detalhes = "Item {itemID = \"item08\", nome = \"geladeira\", quantidade = 3, categoria = \"eletrodomestico\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:33:04.636195351 UTC, acao = Add "item09", detalhes = "Item {itemID = \"item09\", nome = \"airfryer\", quantidade = 3, categoria = \"eletrodomestico\"}", status = Sucesso}
+LogEntry {timestamp = 2025-11-14 18:33:22.274115429 UTC, acao = Add "item10", detalhes = "Item {itemID = \"item10\", nome = \"forno\", quantidade = 1, categoria = \"eletrodomestico\"}", status = Sucesso}
