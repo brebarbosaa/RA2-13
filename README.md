@@ -13,9 +13,8 @@
 | Brenda                   | Validação, Relatórios e Documentação      | @brebarbosaa        |
 | Leticia                  | Arquiteto de Dados + Módulo de I/O        | @Andrade-Leticia       |
 
-### Link para execução online no OnlineGDB
-
-[ https://onlinegdb.com/SEU_LINK_AQUI](https://www.onlinegdb.com/edit/1KtA91Plzd)
+### Link para execução online 
+(https://www.onlinegdb.com/edit/1KtA91Plzd)
 
 ## Descrição do Projeto
 
