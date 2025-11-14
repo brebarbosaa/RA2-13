@@ -30,10 +30,15 @@ Sistema de controle de inventário desenvolvido em Haskell
 
 ## Comandos disponíveis
 add <id> <nome> <quantidade> <categoria>    (adiciona ou cria item)
+
 remove <id> <quantidade>                    (remove quantidade ou item inteiro)
+
 update <id> <novaQuantidade>                (altera quantidade diretamente)
+
 list                                        (exibe todo o inventário)
+
 report                                      (gera relatórios completos)
+
 exit                                        (encerra o programa)
 
 ## Cenários de teste manuais
@@ -41,29 +46,81 @@ exit                                        (encerra o programa)
 ### Cenário 1 – Persistência de estado (Sucesso)
 
 1 - Iniciar o programa (sem arquivos de dados).
+
 2 - Adicionar 3 itens.
+
 3 - Fechar o programa.
+
 4 - Verificar se os arquivos Inventario.dat e Auditoria.log foram criados.
+
 5 - Reiniciar o programa.
+
 6 - Executar um comando de "listar" (a ser criado) ou verificar se o estado carregado em
 memória contém os 3 itens.
+
 **Resultado:**
+
+Auditoria.log: 
+
+LogEntry {timestamp = 2025-11-14 19:48:23.352908392 UTC, acao = Add "01", detalhes = "Item {itemID = \"01\", nome = \"item1\", quantidade = 1, categoria = \"cenario1\"}", status = Sucesso}
+
+LogEntry {timestamp = 2025-11-14 19:48:37.780525199 UTC, acao = Add "02", detalhes = "Item {itemID = \"02\", nome = \"item2\", quantidade = 2, categoria = \"cenario1\"}", status = Sucesso}
+
+LogEntry {timestamp = 2025-11-14 19:48:49.905517006 UTC, acao = Add "03", detalhes = "Item {itemID = \"03\", nome = \"item3\", quantidade = 3, categoria = \"cenario1\"}", status = Sucesso}
+
+Inventario.dat:
+
+fromList [("01",Item {itemID = "01", nome = "item1", quantidade = 1, categoria = "cenario1"}),("02",Item {itemID = "02", nome = "item2", quantidade = 2, categoria = "cenario1"}),("03",Item {itemID = "03", nome = "item3", quantidade = 3, categoria = "cenario1"})]
 
 ### 2. Cenário 2: Erro de Lógica (Estoque Insuficiente)
+
 1 - Adicionar um item com 10 unidades (ex: "teclado").
+
 2 -  Tentar remover 15 unidades desse item.
+
 3 - Verificar se o programa exibiu uma mensagem de erro clara.
+
 4 - Verificar se o Inventario.dat (e o estado em memória) ainda mostra 10 unidades.
+
 5 - Verificar se o Auditoria.log contém uma LogEntry com StatusLog (Falha ...).
+
 **Resultado:**
+
+Mensagem ao tentar remover uma quantidade a mais do que disponível:
+
+Estoque insuficiente. Estoque disponível: 10
+
+Inventario.dat:
+
+fromList [("01",Item {itemID = "01", nome = "teclado", quantidade = 10, categoria = "cenario2"})]
+
+Auditoria.log:
+
+LogEntry {timestamp = 2025-11-14 19:54:57.810907202 UTC, acao = Add "01", detalhes = "Item {itemID = \"01\", nome = \"teclado\", quantidade = 10, categoria = \"cenario2\"}", status = Sucesso}
+
+LogEntry {timestamp = 2025-11-14 19:55:15.828299275 UTC, acao = Remove "01" 15, detalhes = "Estoque insuficiente. Estoque dispon\237vel: 10", status = Falha "Estoque insuficiente. Estoque dispon\237vel: 10"}
 
 ### 3. Cenário 3: Geração de Relatório de Erros
+
 1 - Após executar o Cenário 2, executar o comando report.
-2 - Verificar se o relatório gerado (especificamente pela função logsDeErro) exibe a
-entrada de log referente à falha registrada no Cenário 2 (a tentativa de remover
-estoque insuficiente).
+
+2 - Verificar se o relatório gerado (especificamente pela função logsDeErro) exibe a entrada de log referente à falha registrada no Cenário 2 (a tentativa de remover estoque insuficiente).
+
 **Resultado:**
 
+Itens por categoria:
+
+cenario02: 10
+
+Logs de erro recentes:
+
+LogEntry {timestamp = 2025-11-14 19:55:15.828299275 UTC, acao = Remove "01" 15, detalhes = "Estoque insuficiente. Estoque dispon\237vel: 10", status = Falha "Estoque insuficiente. Estoque dispon\237vel: 10"}
+
+Itens com estoque baixo (qtd < 5):
+
+Item mais movimentado:
+
+01 com 2 operações.
 
 ### Dados mínimos (10 itens distintos)
 
